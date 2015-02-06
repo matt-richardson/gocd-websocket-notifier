@@ -1,4 +1,4 @@
-package com.matt-richardson.gocd.websocket-notifier;
+package com.matt_richardson.gocd.websocket_notifier;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -42,7 +42,7 @@ public class GoNotificationPlugin
       System.out.println("WebSocket server started on port: " + s.getPort());
       this.pipelineListener = new WebSocketPipelineListener(s);
     } catch (UnknownHostException e) {
-      System.out.println("Failed to launch WebSocket server started on port: " + s.getPort());
+      System.out.println("Failed to launch WebSocket server started on port: " + port);
       e.printStackTrace();
     }
   }
@@ -89,7 +89,7 @@ public class GoNotificationPlugin
   }
 
   private GoNotificationMessage parseNotificationMessage(GoPluginApiRequest goPluginApiRequest) {
-    return (GoNotificationMessage)new GsonBuilder().create().fromJson(goPluginApiRequest.requestBody(), GoNotificationMessage.class);
+    return new GsonBuilder().create().fromJson(goPluginApiRequest.requestBody(), GoNotificationMessage.class);
   }
 
   private GoPluginApiResponse renderJSON(final int responseCode, Object response) {

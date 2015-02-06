@@ -1,7 +1,6 @@
-package com.matt-richardson.gocd.websocket-notifier;
+package com.matt_richardson.gocd.websocket_notifier;
 
 import com.thoughtworks.go.plugin.api.logging.Logger;
-import com.matt-richardson.gocd.websocket-notifier.ruleset.PipelineStatus;
 
 public abstract class PipelineListener
 {
@@ -13,21 +12,21 @@ public abstract class PipelineListener
     handlePipelineStatus(PipelineStatus.valueOf(message.getStageResult().toUpperCase()), message);
   }
 
-  protected void handlePipelineStatus(PipelineStatus status, GoNotificationMessage message) throws Exception {
-    switch (1.$SwitchMap$in$ashwanthkumar$gocd$slack$ruleset$PipelineStatus[status.ordinal()]) {
-    case 1:
+  protected void handlePipelineStatus(PipelineStatus status, com.matt_richardson.gocd.websocket_notifier.GoNotificationMessage message) throws Exception {
+    switch(status){
+    case PASSED:
       onSuccess(message);
       break;
-    case 2:
+    case FAILED:
       onFailed(message);
       break;
-    case 3:
+    case FIXED:
       onFixed(message);
       break;
-    case 4:
+    case BROKEN:
       onBroken(message);
       break;
-    case 5:
+    case ALL:
       break;
     default:
       throw new RuntimeException("I just got pipeline status=" + status + ". I don't know how to handle it.");

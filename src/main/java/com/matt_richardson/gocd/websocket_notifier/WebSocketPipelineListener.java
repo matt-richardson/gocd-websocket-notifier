@@ -1,4 +1,4 @@
-package com.matt-richardson.gocd.websocket-notifier;
+package com.matt_richardson.gocd.websocket_notifier;
 
 public class WebSocketPipelineListener extends PipelineListener
 {

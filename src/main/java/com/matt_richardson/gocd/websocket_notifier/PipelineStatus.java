@@ -1,4 +1,4 @@
-package com.matt-richardson.gocd.websocket-notifier.ruleset;
+package com.matt_richardson.gocd.websocket_notifier;
 
 public enum PipelineStatus {
     /* Pipeline has failed for the first time */
@@ -12,9 +12,5 @@ public enum PipelineStatus {
     /* Pretty obvious ah? */
     ,ALL
     /* Status of the pipeline while being built. */
-    UNKNOWN;
-
-    public boolean matches(String state) {
-        return this == ALL || this == PipelineStatus.valueOf(state.toUpperCase());
-    }
+    ,UNKNOWN
 }

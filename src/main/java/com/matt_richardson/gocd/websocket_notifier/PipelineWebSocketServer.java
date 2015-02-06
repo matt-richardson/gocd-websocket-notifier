@@ -1,4 +1,4 @@
-package com.matt-richardson.gocd.websocket-notifier;
+package com.matt_richardson.gocd.websocket_notifier ;
 
 import java.io.PrintStream;
 import java.net.InetAddress;
@@ -47,7 +47,7 @@ public class PipelineWebSocketServer extends WebSocketServer
 
   public void sendToAll(String text)
   {
-    Collection con = connections();
+    Collection<WebSocket> con = connections();
     synchronized (con) {
       for (WebSocket c : con)
         c.send(text);
