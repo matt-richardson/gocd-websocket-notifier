@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<go-plugin id="slack.notifier" version="1">
+    <about>
+        <name>Slack Notification Plugin</name>
+        <version>0.1</version>
+        <target-go-version>15.1.0</target-go-version>
+        <description>Plugin to send build notifications to slack</description>
+        <vendor>
+            <name>Ashwanth Kumar</name>
+            <url>https://github.com/ashwanthkumar/gocd-slack-build-notifier</url>
+        </vendor>
+    </about>
+</go-plugin>
