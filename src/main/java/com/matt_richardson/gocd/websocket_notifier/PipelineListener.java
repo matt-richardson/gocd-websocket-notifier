@@ -28,6 +28,8 @@ public abstract class PipelineListener
       break;
     case ALL:
       break;
+    case UNKNOWN:
+      break;
     default:
       throw new RuntimeException("I just got pipeline status=" + status + ". I don't know how to handle it.");
     }
