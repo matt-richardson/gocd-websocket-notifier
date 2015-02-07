@@ -39,16 +39,17 @@ public class GoNotificationPlugin
     try {
       s = new PipelineWebSocketServer(port);
       s.start();
-      System.out.println("WebSocket server started on port: " + s.getPort());
+      LOGGER.info("WebSocket server started on port: " + s.getPort());
       this.pipelineListener = new WebSocketPipelineListener(s);
     } catch (UnknownHostException e) {
-      System.out.println("Failed to launch WebSocket server started on port: " + port);
+      LOGGER.error("Failed to launch WebSocket server on port: " + port);
       e.printStackTrace();
     }
   }
 
   public GoPluginApiResponse handle(GoPluginApiRequest goPluginApiRequest)
   {
+    LOGGER.info("received go plugin api request " + goPluginApiRequest.requestName());
     if (goPluginApiRequest.requestName().equals("notifications-interested-in"))
       return handleNotificationsInterestedIn();
     if (goPluginApiRequest.requestName().equals("stage-status")) {
@@ -59,26 +60,29 @@ public class GoNotificationPlugin
 
   public GoPluginIdentifier pluginIdentifier()
   {
-    return new GoPluginIdentifier("notification", goSupportedVersions);
+      return new GoPluginIdentifier("notification", goSupportedVersions);
   }
 
   private GoPluginApiResponse handleNotificationsInterestedIn() {
     Map response = new HashMap();
     response.put("notifications", Arrays.asList(new String[] { "stage-status" }));
+    LOGGER.info("requesting details of stage-status notifications");
     return renderJSON(200, response);
   }
 
   private GoPluginApiResponse handleStageNotification(GoPluginApiRequest goPluginApiRequest) {
+    LOGGER.info("handling stage notification");
     GoNotificationMessage message = parseNotificationMessage(goPluginApiRequest);
+    LOGGER.info(message.fullyQualifiedJobName() + " has " + message.getStageState() + "/" + message.getStageResult());
     int responseCode = 200;
 
     Map response = new HashMap();
     List messages = new ArrayList();
     try {
       response.put("status", "success");
-      LOGGER.info(message.fullyQualifiedJobName() + " has " + message.getStageState() + "/" + message.getStageResult());
       this.pipelineListener.notify(message);
     } catch (Exception e) {
+      LOGGER.error("failed to notify pipeline listener", e);
       responseCode = 500;
       response.put("status", "failure");
       messages.add(e.getMessage());
