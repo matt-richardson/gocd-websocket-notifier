@@ -1,31 +1,19 @@
 package com.matt_richardson.gocd.websocket_notifier;
 
-public class WebSocketPipelineListener extends PipelineListener
-{
-  private PipelineWebSocketServer webSocketServer;
+import com.thoughtworks.go.plugin.api.logging.Logger;
+import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 
-  public WebSocketPipelineListener(PipelineWebSocketServer webSocketServer)
-  {
-    this.webSocketServer = webSocketServer;
-  }
+public class WebSocketPipelineListener {
+    private PipelineWebSocketServer webSocketServer;
+    private Logger LOGGER = Logger.getLoggerFor(WebSocketPipelineListener.class);
 
-  public void onSuccess(GoNotificationMessage message) throws Exception
-  {
-    this.webSocketServer.sendToAll(message.toString());
-  }
+    public WebSocketPipelineListener(PipelineWebSocketServer webSocketServer) {
+        this.webSocketServer = webSocketServer;
+    }
 
-  public void onFailed(GoNotificationMessage message) throws Exception
-  {
-    this.webSocketServer.sendToAll(message.toString());
-  }
-
-  public void onBroken(GoNotificationMessage message) throws Exception
-  {
-    this.webSocketServer.sendToAll(message.toString());
-  }
-
-  public void onFixed(GoNotificationMessage message) throws Exception
-  {
-    this.webSocketServer.sendToAll(message.toString());
-  }
+    public void notify(GoPluginApiRequest message)
+            throws Exception {
+        LOGGER.info("notify called with request name '" + message.requestName() + "' and requestBody '" + message.requestBody() + "'");
+        this.webSocketServer.sendToAll(message.requestBody());
+    }
 }
