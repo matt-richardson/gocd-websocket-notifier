@@ -17,7 +17,7 @@ public class GoNotificationPlugin
         implements GoPlugin {
     private static Logger LOGGER = Logger.getLoggerFor(GoNotificationPlugin.class);
     public static final String EXTENSION_TYPE = "notification";
-    private static final List<String> goSupportedVersions = Arrays.asList(new String[]{"1.0"});
+    private static final List<String> goSupportedVersions = Arrays.asList("1.0");
     public static final String REQUEST_NOTIFICATIONS_INTERESTED_IN = "notifications-interested-in";
     public static final String REQUEST_STAGE_STATUS = "stage-status";
     public static final int SUCCESS_RESPONSE_CODE = 200;
@@ -27,11 +27,14 @@ public class GoNotificationPlugin
     @Override
     public void initializeGoApplicationAccessor(GoApplicationAccessor goApplicationAccessor) {
         LOGGER.info("initializeGoApplicationAccessor called");
-        if (this.pipelineListener == null) {
+        if (pipelineListener == null) {
             LOGGER.info("pipelineListener is null - creating a new one");
+
+            PluginConfig pluginConfig = new PluginConfig();
+            int port = pluginConfig.getPort();
+
             org.java_websocket.WebSocketImpl.DEBUG = true;
-            int port = 8887;
-            PipelineWebSocketServer s = null;
+            PipelineWebSocketServer s;
             try {
                 LOGGER.info("Starting WebSocket server started on port: " + port);
                 s = new PipelineWebSocketServer(port);
