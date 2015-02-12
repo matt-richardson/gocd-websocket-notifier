@@ -33,15 +33,14 @@ public class PipelineWebSocketServer extends WebSocketServer {
     }
 
     public void onError(WebSocket conn, Exception ex) {
-        ex.printStackTrace();
-        if (conn != null) ;
+        LOGGER.info("websocket error", ex);
     }
 
     public void sendToAll(String text) {
         Collection<WebSocket> con = connections();
         synchronized (con) {
             for (WebSocket c : con) {
-                LOGGER.info("sending '" + text + "' to " + con);
+                LOGGER.debug("sending '" + text + "' to " + con);
                 c.send(text);
             }
         }

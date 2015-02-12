@@ -40,7 +40,7 @@ public class GoNotificationPlugin
                 s = new PipelineWebSocketServer(port);
                 s.start();
                 LOGGER.info("WebSocket server started on port: " + s.getPort());
-                this.pipelineListener = new WebSocketPipelineListener(s);
+                pipelineListener = new WebSocketPipelineListener(s);
             } catch (UnknownHostException e) {
                 LOGGER.error("Failed to launch WebSocket server on port: " + port, e);
             }
@@ -69,8 +69,8 @@ public class GoNotificationPlugin
     }
 
     private GoPluginApiResponse handleNotificationsInterestedIn() {
-        Map response = new HashMap();
-        response.put("notifications", Arrays.asList(new String[]{REQUEST_STAGE_STATUS}));
+        Map<String, List<String>> response = new HashMap<String, List<String>>();
+        response.put("notifications", Arrays.asList(REQUEST_STAGE_STATUS));
         LOGGER.info("requesting details of stage-status notifications");
         return renderJSON(SUCCESS_RESPONSE_CODE, response);
     }
@@ -80,11 +80,11 @@ public class GoNotificationPlugin
 
         int responseCode = SUCCESS_RESPONSE_CODE;
 
-        Map response = new HashMap();
-        List messages = new ArrayList();
+        Map<String, Object> response = new HashMap<String, Object>();
+        List<String> messages = new ArrayList<String>();
         try {
             response.put("status", "success");
-            this.pipelineListener.notify(goPluginApiRequest);
+            pipelineListener.notify(goPluginApiRequest);
         } catch (Exception e) {
             LOGGER.error("failed to notify pipeline listener", e);
             responseCode = INTERNAL_ERROR_RESPONSE_CODE;
