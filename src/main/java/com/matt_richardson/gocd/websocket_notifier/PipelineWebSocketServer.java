@@ -18,22 +18,19 @@ public class PipelineWebSocketServer extends WebSocketServer {
     }
 
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        sendToAll("new connection: " + handshake.getResourceDescriptor());
-        LOGGER.info(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " entered the room!");
+        LOGGER.debug(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected");
     }
 
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        sendToAll(conn + " has left the room!");
-        LOGGER.info(conn + " has left the room!");
+        LOGGER.debug(conn + " has disconnected");
     }
 
     public void onMessage(WebSocket conn, String message) {
-        sendToAll(message);
-        LOGGER.info(conn + ": " + message);
+        //LOGGER.debug(conn + " sent message '" + message);
     }
 
     public void onError(WebSocket conn, Exception ex) {
-        LOGGER.info("websocket error", ex);
+        LOGGER.warn("websocket error", ex);
     }
 
     public void sendToAll(String text) {
