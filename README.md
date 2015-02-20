@@ -17,6 +17,10 @@ gocd-websocket-notifier.conf in the home directory of the user that runs go.
 port=8888
 ````
 
+## Known clients
+At this point the only known client of this is [gocd-windows-tray-build-notifier](https://github.com/matt-richardson/gocd-windows-tray-build-notifier).
+However, I hope that this will be useful to others.
+
 ## Planned Enhancements
 * Send [a reply](http://www.go.cd/documentation/developer/writing_go_plugins/notification/version_1_0/stage_status_notification.html#response---from-the-plugin)
 if cannot notify listeners.
