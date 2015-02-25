@@ -6,7 +6,7 @@
 
     <groupId>com.matt-richardson</groupId>
     <artifactId>gocd-websocket-notifier</artifactId>
-    <version>0.2</version>
+    <version>0.3</version>
     <packaging>jar</packaging>
 
     <properties>

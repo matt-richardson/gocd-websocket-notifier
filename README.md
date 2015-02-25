@@ -1,10 +1,17 @@
 # gocd-websocket-notifier
 WebSocket based GoCD build notifier
 
-*Note*: this plugin is still under development. It should work for basic use cases.
-There is a very high chance that the json that it publishes will change (to include more pipeline details).
+Listens to notifications from the GoCD notification api, and publishes them over websockets.
+This initial use case is for low impact, fast build notifiers, such as
+[gocd-windows-tray-build-notifier](https://github.com/matt-richardson/gocd-windows-tray-build-notifier).
+
+The only supported notification (the only one available as of Feb 2015) is the stage-status.
+This has been enhanced to provide further pipeline instance information (via the pipeline
+history api) and include them in the message as `x-pipeline-instance-details`.
+
 If you run into any issues please [raise it](https://github.com/matt-richardson/gocd-websocket-notifier/issues),
-or better yet, send a PR.
+or better yet, send a PR. Please note, I am not a Java developer, so any (constructive) feedback gratefully
+appreciated.
 
 ## Setup
 Download jar from releases & place it in /plugins/external & restart Go Server.
@@ -24,8 +31,6 @@ However, I hope that this will be useful to others.
 ## Planned Enhancements
 * Send [a reply](http://www.go.cd/documentation/developer/writing_go_plugins/notification/version_1_0/stage_status_notification.html#response---from-the-plugin)
 if cannot notify listeners.
-* Query to get more [pipeline details](https://github.com/gocd/documentation/blob/master/user/api/pipeline_api.md#pipeline-history)
-and include them in the published message. Unfortunately will require credentials configured in the config.
 
 ## License
 http://www.apache.org/licenses/LICENSE-2.0
