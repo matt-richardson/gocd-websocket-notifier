@@ -39,7 +39,9 @@ public class PipelineDetailsPopulator {
 
         String result = requestBody;
         try {
-            JsonElement extraDetails = downloadPipelineInstanceDetails(json.get("pipeline-name").getAsString());
+            JsonObject pipeline = json.get("pipeline").getAsJsonObject();
+            String name = pipeline.get("name").getAsString();
+            JsonElement extraDetails = downloadPipelineInstanceDetails(name);
             result = mergeInPipelineInstanceDetails(json, extraDetails);
         } catch (IOException e) {
             //TODO: log
