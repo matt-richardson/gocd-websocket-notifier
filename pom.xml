@@ -6,12 +6,12 @@
 
     <groupId>com.matt-richardson</groupId>
     <artifactId>gocd-websocket-notifier</artifactId>
-    <version>0.3</version>
+    <version>0.4</version>
     <packaging>jar</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <go.version>14.4.0</go.version>
+        <go.version>15.2.0</go.version>
     </properties>
 
     <dependencies>

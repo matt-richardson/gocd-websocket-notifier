@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.thoughtworks.go.plugin.api.logging.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +13,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class PipelineDetailsPopulator {
+    private static Logger LOGGER = Logger.getLoggerFor(GoNotificationPlugin.class);
+
     String mergeInPipelineInstanceDetails(JsonElement notification, JsonElement pipelineInstance)
     {
         JsonObject json = notification.getAsJsonObject();
@@ -39,10 +42,16 @@ public class PipelineDetailsPopulator {
 
         String result = requestBody;
         try {
-            JsonElement extraDetails = downloadPipelineInstanceDetails(json.get("pipeline-name").getAsString());
+            JsonElement pipelineName = json.get("pipeline-name"); //GoCD 15.1
+            if (null == pipelineName) {
+                //GoCD 15.2
+                JsonObject pipeline = json.get("pipeline").getAsJsonObject();
+                pipelineName = pipeline.get("name");
+            }
+            JsonElement extraDetails = downloadPipelineInstanceDetails(pipelineName.getAsString());
             result = mergeInPipelineInstanceDetails(json, extraDetails);
         } catch (IOException e) {
-            //TODO: log
+            LOGGER.error("Failed to download pipeline instance details for requestBody '" + requestBody + "'", e);
         }
         return result;
     }
