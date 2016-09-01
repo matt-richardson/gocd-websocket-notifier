@@ -29,12 +29,17 @@ public class GoNotificationPlugin
         if (pipelineListener == null) {
             PluginConfig pluginConfig = new PluginConfig();
             int port = pluginConfig.getPort();
+            String host = pluginConfig.getHost();
 
             //org.java_websocket.WebSocketImpl.DEBUG = true;
             PipelineWebSocketServer s;
             try {
                 LOGGER.info("Starting WebSocket server started on port: " + port);
-                s = new PipelineWebSocketServer(port);
+                if (pluginConfig.isHostSet()) {
+                	s = new PipelineWebSocketServer(host, port);
+                } else {
+                	s = new PipelineWebSocketServer(port);
+                }
                 s.start();
                 LOGGER.info("WebSocket server started on port: " + s.getPort());
                 pipelineListener = new WebSocketPipelineListener(s);
