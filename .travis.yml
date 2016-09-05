@@ -3,8 +3,8 @@ env:
   - VERSION=0.4.1
   - SHORT_COMMIT_SHA=$(git rev-parse --short HEAD)
   - RELEASE_VERSION=$VERSION+build.$TRAVIS_BUILD_NUMBER.sha.$SHORT_COMMIT_SHA
-  - secure: YCN+w0KkQOcFtTw9SntEoZ7w+ZX4z7+yPi9FW7B0DUJNbMO1+5JT78c24uv9ocT3GXFkCQGTJUGlgRubIXLP2RbgQrgAvFtSLTU12kBD5CRWbC+BZt8XA/BntqIideBsc6YvGixfJgQrQ7D9IKXfoBFTYa5zIttApu33ttbTyZc=
-  - secure: Js6ZF9R37ej+C8rf1XRZDEMQaDqzBtWpzAxxaBiH+gNNcLeCIUApmk1vcjb714h45sYiFlxG2AzKpXwDqQl7bUH3NnhUw2jaW362oJRMb+udx97FiGri2yYuncS3x3Aw9WyJnbLhd12n5E8RiBYJJUatTDSPXxaWKxjvGtuZnXk=
+  - secure: c4X2AkCdg2nNqnWdupl8vLR/HkuQ149Kcgb7qFDEjmm0Kps90iMZBsIX4MJEEvpGQ6qxQWZsgJYuiCk3QGaeUFdzd/aeTXzUsaw40pkDWfAvAlAvuIbgYYWSeIt2SIUpczr9twbVM1p9+HWZQGIhby1OVGPPHpsJkgeM2aboBCw=
+  - secure: kE7+ToJCo6ImDtsvPmOYFwGhJSimmqo5SSV6GBqauTm3iTVzlEe1PsSqmuILTdgqZWudXc8pwZ3qov5PFgwOjfVW2n7Tg7KpfAoyaKk3dHOAH3/IVKYs5cMHB1GgcbTRG+aS7EyjmNEkeDCaV7SU6MUWSTLqf0bQfJO4ElfQQy4=
 language: java
 jdk:
 - oraclejdk8
@@ -22,7 +22,8 @@ before_deploy:
 - git config --global user.name "Travis CI"
 - export GIT_TAG=$VERSION+build.$TRAVIS_BUILD_NUMBER
 - git tag $GIT_TAG -a -m "Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER"
-- git push -q https://$GIT_TAG_USER:$GIT_TAG_AUTH_TOKEN@github.com/matt-richardson/gocd-websocket-notifier.git --tags
+- git push -q https://$GIT_TAG_USER:$GIT_TAG_AUTH_TOKEN@github.com/matt-richardson/gocd-websocket-notifier.git
+  --tags
 - ls -alR
 deploy:
   provider: releases
