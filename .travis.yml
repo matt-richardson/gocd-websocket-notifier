@@ -1,1 +1,28 @@
+env:
+  global:
+  - VERSION=0.4.1
+  - SHORT_COMMIT_SHA=$(git rev-parse --short HEAD)
+  - RELEASE_VERSION=$VERSION+build.$TRAVIS_BUILD_NUMBER.sha.$SHORT_COMMIT_SHA
 language: java
+jdk:
+- oraclejdk8
+branches:
+  except:
+  - /^[0-9]*\.[0-9]*\.[0-9]\+build.[0-9]*$/
+before_deploy:
+- git config --global user.email "builds@travis-ci.com"
+- git config --global user.name "Travis CI"
+- export GIT_TAG=$VERSION+build.$TRAVIS_BUILD_NUMBER
+- git tag $GIT_TAG -a -m "Generated tag from TravisCI for build $TRAVIS_BUILD_NUMBER"
+- git push -q https://$GIT_TAG_USER:$GIT_TAG_AUTH_TOKEN@github.com/matt-richardson/gocd-websocket-notifier.git --tags
+- ls -alR
+deploy:
+  provider: releases
+  api_key:
+    secure: OkS1oQ39WbXQMRDmKkC3VB4rWzyJdpmXRMMnGIpPc3CSvVS8WFroVs9mYXOqvD/y33bnzTY2p84roYLrYkr6C1G0v5gS7SfQVfhmV2/DiooBpaSB414VfBLftmRiVNs8M9nwXjLp7F84TOE9weJgbiu//J91FrKe0z5XH3ETFX5QbnkoTA38XHfVwaWeylERy+O7sKOcPbD6Jcxs4BrWHcQin6F3TivzuQNFNWjRr2KT49sJXJbBPwbqrlXPoW9UUIo07aMV+2SInkv7dTnpBvIYV836w9edIDcarmMlc1MRt/6T+/r1yZHpuREdr/gfaykI94N6DbQZU1DProq3nYEpdGeB5haP36V1HxXtURCbICrjWCymdmmX/m1wDodpDHUtdNSNlGBZU0LKmAz0k7Pq988ZrkB4Kv/Fp2HJGnBjNZnfBVAxR1hpme+zP6SCO3IXFZ6fXLCFqlMYBnlb4gWctTycZpQ23T9fyQHo28QHucCs4b2yiCYvtUaigBUj+LYNSUMYlGmZIFc8UiWNHHG8U1s098KGOHjObm1WAYLlOsdZBAEz5rjgKrICDyRRo5kE1G0OOqLf0OEX1CVJtCPi06s4KUooWKYGTExcd8nj3XGfa8LV6GV0XwvdChH1MnUEzUuUJFFQWxjF0VlIDQL+fahhXbazkcL+2oWknOg=
+  file: target/gocd-websocket-notifier.zip
+  skip_cleanup: true
+  on:
+    branch: master
+    tags: false
+    repo: matt-richardson/gocd-websocket-notifier
