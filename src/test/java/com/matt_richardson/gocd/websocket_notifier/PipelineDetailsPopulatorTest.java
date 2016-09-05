@@ -23,9 +23,9 @@ public class PipelineDetailsPopulatorTest extends TestCase {
     }
 
     //TODO: fix, as not a great test - external dependency on a running go instance
-    public void testDownloadPipelineInstanceDetails() throws Exception {
-        PipelineDetailsPopulator populator = new PipelineDetailsPopulator();
-        JsonElement element = populator.downloadPipelineInstanceDetails("test");
-        assertThat(element, notNullValue());
-    }
+    //public void testDownloadPipelineInstanceDetails() throws Exception {
+    //    PipelineDetailsPopulator populator = new PipelineDetailsPopulator();
+    //    JsonElement element = populator.downloadPipelineInstanceDetails("test");
+    //    assertThat(element, notNullValue());
+    //}
 }
