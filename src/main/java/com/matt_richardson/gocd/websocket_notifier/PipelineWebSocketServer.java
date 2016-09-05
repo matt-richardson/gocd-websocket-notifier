@@ -16,6 +16,11 @@ public class PipelineWebSocketServer extends WebSocketServer {
             throws UnknownHostException {
         super(new InetSocketAddress(port));
     }
+    
+    public PipelineWebSocketServer(String host, int port)
+            throws UnknownHostException {
+        super(new InetSocketAddress(host, port));
+    }
 
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         LOGGER.debug(conn.getRemoteSocketAddress().getAddress().getHostAddress() + " connected");
