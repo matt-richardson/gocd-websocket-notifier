@@ -3,6 +3,8 @@ env:
   - VERSION=0.4.1
   - SHORT_COMMIT_SHA=$(git rev-parse --short HEAD)
   - RELEASE_VERSION=$VERSION+build.$TRAVIS_BUILD_NUMBER.sha.$SHORT_COMMIT_SHA
+  - secure: YCN+w0KkQOcFtTw9SntEoZ7w+ZX4z7+yPi9FW7B0DUJNbMO1+5JT78c24uv9ocT3GXFkCQGTJUGlgRubIXLP2RbgQrgAvFtSLTU12kBD5CRWbC+BZt8XA/BntqIideBsc6YvGixfJgQrQ7D9IKXfoBFTYa5zIttApu33ttbTyZc=
+  - secure: Js6ZF9R37ej+C8rf1XRZDEMQaDqzBtWpzAxxaBiH+gNNcLeCIUApmk1vcjb714h45sYiFlxG2AzKpXwDqQl7bUH3NnhUw2jaW362oJRMb+udx97FiGri2yYuncS3x3Aw9WyJnbLhd12n5E8RiBYJJUatTDSPXxaWKxjvGtuZnXk=
 language: java
 jdk:
 - oraclejdk8
