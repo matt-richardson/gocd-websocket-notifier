@@ -1,4 +1,7 @@
 # gocd-websocket-notifier
+
+[![Build Status](https://travis-ci.org/matt-richardson/gocd-websocket-notifier.svg?branch=master)](https://travis-ci.org/matt-richardson/gocd-websocket-notifier)
+
 WebSocket based GoCD build notifier
 
 Listens to notifications from the GoCD (15.1+) notification api, and publishes them over websockets.
