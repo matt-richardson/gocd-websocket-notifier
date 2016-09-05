@@ -53,3 +53,5 @@ out/
 sample.db
 target/
 dist/
+
+classes/
