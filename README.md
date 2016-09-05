@@ -40,4 +40,4 @@ if cannot notify listeners.
 http://www.apache.org/licenses/LICENSE-2.0
 
 ## Credits
-Originally based on the [gocd-slack-notifier](http://github.com/ashwanthkumar/gocd-slack-notifer) by @AshwanthKumar.
+Originally based on the [gocd-slack-build-notifier](https://github.com/ashwanthkumar/gocd-slack-build-notifier) by @AshwanthKumar.
