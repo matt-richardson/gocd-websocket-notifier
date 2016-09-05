@@ -13,7 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <go.version>15.1.0</go.version>
         <finalVersion>${project.version}</finalVersion>
-        <finalName>${project.artifactId}-${project.version}</finalName>
+        <finalName>${project.artifactId}.jar</finalName>
     </properties>
 
     <dependencies>

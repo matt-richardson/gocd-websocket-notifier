@@ -29,7 +29,7 @@ deploy:
   provider: releases
   api_key:
     secure: i7IfoSUXSGm2ki04BL01EuEcPNEWpyZna4XeXQj07quzSoCqMOrb99YCKvXZ2PlyHubrMaMQKcPz43jOPnVfXOsrV5aaaKC0HgF5M/6i1NOvrAUzMZ69EfTspI1yOlc4oaZTJE1gScvVxNh0JDcml8rBqDJnM4U2cPXchn0z3Y8=
-  file: target/gocd-websocket-notifier-$RELEASE_VERSION.jar
+  file: target/gocd-websocket-notifier.jar
   skip_cleanup: true
   on:
     branch: master
