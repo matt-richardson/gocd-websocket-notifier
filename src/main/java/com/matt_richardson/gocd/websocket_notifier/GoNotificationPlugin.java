@@ -7,6 +7,7 @@ import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
 import com.thoughtworks.go.plugin.api.annotation.Extension;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
+import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
 import java.net.UnknownHostException;
@@ -24,7 +25,6 @@ public class GoNotificationPlugin
     public static final int INTERNAL_ERROR_RESPONSE_CODE = 500;
     private static WebSocketPipelineListener pipelineListener;
 
-    @Override
     public void initializeGoApplicationAccessor(GoApplicationAccessor goApplicationAccessor) {
         if (pipelineListener == null) {
             PluginConfig pluginConfig = new PluginConfig();
@@ -49,18 +49,21 @@ public class GoNotificationPlugin
         }
     }
 
-    @Override
     public GoPluginApiResponse handle(GoPluginApiRequest goPluginApiRequest) {
-        LOGGER.debug("received go plugin api request " + goPluginApiRequest.requestName());
-        if (goPluginApiRequest.requestName().equals(REQUEST_NOTIFICATIONS_INTERESTED_IN))
-            return handleNotificationsInterestedIn();
-        if (goPluginApiRequest.requestName().equals(REQUEST_STAGE_STATUS)) {
-            return handleStageNotification(goPluginApiRequest);
-        }
-        return null;
+    	try {
+	        LOGGER.debug("received go plugin api request " + goPluginApiRequest.requestName());
+	        if (goPluginApiRequest.requestName().equals(REQUEST_NOTIFICATIONS_INTERESTED_IN))
+	            return handleNotificationsInterestedIn();
+	        if (goPluginApiRequest.requestName().equals(REQUEST_STAGE_STATUS)) {
+	            return handleStageNotification(goPluginApiRequest);
+	        }
+	        return DefaultGoPluginApiResponse.badRequest("Invalid request name: " + goPluginApiRequest.requestName());
+    	} catch (Exception e) {
+    		LOGGER.error(String.format("Failed to handle request with name: %s , and body: %s ", goPluginApiRequest.requestName(), goPluginApiRequest.requestBody()), e);
+    		return DefaultGoPluginApiResponse.error(e.getMessage());
+    	}
     }
 
-    @Override
     public GoPluginIdentifier pluginIdentifier() {
         LOGGER.debug("received pluginIdentifier request");
         return new GoPluginIdentifier(EXTENSION_TYPE, goSupportedVersions);
