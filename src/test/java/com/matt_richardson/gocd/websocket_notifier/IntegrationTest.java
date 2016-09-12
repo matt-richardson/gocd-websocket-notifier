@@ -21,7 +21,6 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.attribute.PosixFilePermission;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -62,18 +61,6 @@ public class IntegrationTest {
         String destPath = testPath + "/lib/plugins/external/gocd-websocket-notifier.jar";
         System.out.println("Copying '" + srcPath + "' to '" + destPath + "'");
         Files.copy(Paths.get(srcPath), Paths.get(destPath), REPLACE_EXISTING);
-
-        Set<PosixFilePermission> perms = new HashSet<>();
-        perms.add(PosixFilePermission.OWNER_READ);
-        perms.add(PosixFilePermission.OWNER_WRITE);
-        perms.add(PosixFilePermission.OWNER_EXECUTE);
-        perms.add(PosixFilePermission.GROUP_READ);
-        perms.add(PosixFilePermission.GROUP_WRITE);
-        perms.add(PosixFilePermission.GROUP_EXECUTE);
-        perms.add(PosixFilePermission.OTHERS_READ);
-        perms.add(PosixFilePermission.OTHERS_WRITE);
-        perms.add(PosixFilePermission.OTHERS_EXECUTE);
-        Files.setPosixFilePermissions(Paths.get(testPath), perms);
     }
 
     private static void CleanupTestFolder(String testPath) throws IOException {
@@ -151,8 +138,7 @@ public class IntegrationTest {
 
         final HostConfig hostConfig = HostConfig.builder()
                 .portBindings(portBindings)
-                .binds(HostConfig.Bind.from(testPath + "/lib").to("/var/lib/go-server").build(),
-                       HostConfig.Bind.from(testPath + "/log").to("/var/log/go-server").build())
+                .binds(HostConfig.Bind.from(testPath + "/lib").to("/var/lib/go-server").build())
                 .build();
 
         // Create container with exposed ports
@@ -170,6 +156,16 @@ public class IntegrationTest {
     public static void ShutdownContainer() throws Exception {
 
         if (containerId != null) {
+
+            System.out.println("Reading '/var/lib/go-server/go-server.log'");
+            final String[] command = {"cat", "/var/lib/go-server/go-server.log"};
+            final String execId = docker.execCreate(
+                    containerId, command, DockerClient.ExecCreateParam.attachStdout(),
+                    DockerClient.ExecCreateParam.attachStderr());
+            final LogStream output = docker.execStart(execId);
+            final String execOutput = output.readFully();
+            System.out.println(execOutput);
+
             System.out.println("Stopping container " + containerId + "...");
             docker.stopContainer(containerId, 10);
 
