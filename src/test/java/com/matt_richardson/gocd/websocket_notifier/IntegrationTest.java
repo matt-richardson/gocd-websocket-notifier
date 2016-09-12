@@ -45,7 +45,7 @@ public class IntegrationTest {
 
     private static String DetermineTestPath() throws UnsupportedEncodingException {
         String path = IntegrationTest.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        String testPath = URLDecoder.decode(path, "UTF-8") + "/../docker-testing";
+        String testPath = URLDecoder.decode(path, "UTF-8") + "../docker-testing";
         System.out.println("Test path is " + testPath);
         return testPath;
     }
@@ -54,7 +54,10 @@ public class IntegrationTest {
         String pluginLocation = testPath + "/lib/plugins/external";
         System.out.println("Creating path " + pluginLocation);
         Files.createDirectories(Paths.get(pluginLocation));
-        String srcPath = testPath + "/../gocd-websocket-notifier*.jar";
+        String srcPath = testPath + "/../gocd-websocket-notifier.jar";
+        if (!Files.exists(Paths.get(srcPath))) {
+            srcPath = testPath + "/../../classes/artifacts/gocd-websocket-notifier.jar";
+        }
         String destPath = testPath + "/lib/plugins/external/gocd-websocket-notifier.jar";
         System.out.println("Copying '" + srcPath + "' to '" + destPath + "'");
         Files.copy(Paths.get(srcPath), Paths.get(destPath), REPLACE_EXISTING);
