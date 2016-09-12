@@ -16,6 +16,7 @@
         <finalName>${project.artifactId}-${project.version}</finalName>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <skipTests>false</skipTests>
     </properties>
 
     <dependencies>
@@ -117,6 +118,13 @@
                         </configuration>
                     </execution>
                 </executions>
+                </plugin>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
+                <configuration>
+                    <skipTests>${skipTests}</skipTests>
+                </configuration>
             </plugin>
         </plugins>
     </build>

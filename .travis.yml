@@ -19,7 +19,9 @@ before_install:
 install:
 - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U
 script:
-- mvn package -DfinalName=gocd-websocket-notifier -DfinalVersion=$RELEASE_VERSION
+- mvn package -DfinalName=gocd-websocket-notifier -DfinalVersion=$RELEASE_VERSION -Dtest=\!IntegrationTest
+after_script:
+- mvn test -Dtest=IntegrationTest
 before_deploy:
 - git config --global user.email "builds@travis-ci.com"
 - git config --global user.name "Travis CI"
