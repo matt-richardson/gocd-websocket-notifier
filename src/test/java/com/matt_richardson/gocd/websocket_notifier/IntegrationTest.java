@@ -241,7 +241,7 @@ public class IntegrationTest {
     @Test
     public void testWebSocketReceivesMessageOnNewPipeline() throws Exception
     {
-        CountDownLatch lock = new CountDownLatch(1);
+        final CountDownLatch lock = new CountDownLatch(1);
         final String[] result = {null};
 
         WebSocketClient mWs = new WebSocketClient( new URI( "ws://localhost:" + websocketsPort ), new Draft_10() )
