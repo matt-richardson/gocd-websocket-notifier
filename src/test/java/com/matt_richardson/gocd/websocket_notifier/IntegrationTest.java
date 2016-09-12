@@ -45,13 +45,19 @@ public class IntegrationTest {
 
     private static String DetermineTestPath() throws UnsupportedEncodingException {
         String path = IntegrationTest.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        return  URLDecoder.decode(path, "UTF-8") + "/../docker-testing";
+        String testPath = URLDecoder.decode(path, "UTF-8") + "/../docker-testing";
+        System.out.println("Test path is " + testPath);
+        return testPath;
     }
 
     private static void SetupTestFolder(String testPath) throws IOException {
-        Files.createDirectories(Paths.get(testPath + "/lib/plugins/external"));
-        Files.copy(Paths.get(testPath + "/../gocd-websocket-notifier-1.0-SNAPSHOT.jar"),
-                Paths.get(testPath + "/lib/plugins/external/gocd-websocket-notifier-1.0-SNAPSHOT.jar"), REPLACE_EXISTING);
+        String pluginLocation = testPath + "/lib/plugins/external";
+        System.out.println("Creating path " + pluginLocation);
+        Files.createDirectories(Paths.get(pluginLocation));
+        String srcPath = testPath + "/../gocd-websocket-notifier-1.0-SNAPSHOT.jar";
+        String destPath = testPath + "/lib/plugins/external/gocd-websocket-notifier-1.0-SNAPSHOT.jar";
+        System.out.println("Copying '" + srcPath + "' to '" + destPath + "'");
+        Files.copy(Paths.get(srcPath), Paths.get(destPath), REPLACE_EXISTING);
     }
 
     private static void CleanupTestFolder(String testPath) throws IOException {
@@ -143,15 +149,16 @@ public class IntegrationTest {
     @AfterClass
     public static void ShutdownContainer() throws Exception {
 
-        System.out.println("Stopping container " + containerId + "...");
-        docker.stopContainer(containerId, 10);
+        if (containerId != null) {
+            System.out.println("Stopping container " + containerId + "...");
+            docker.stopContainer(containerId, 10);
 
-        System.out.println("Removing container " + containerId + "...");
-        // Remove container
-        docker.removeContainer(containerId);
-
-        // Close the docker client
-        docker.close();
+            System.out.println("Removing container " + containerId + "...");
+            docker.removeContainer(containerId);
+        }
+        if (docker != null) {
+            docker.close();
+        }
     }
 
     private String createPipeline() throws Exception {
