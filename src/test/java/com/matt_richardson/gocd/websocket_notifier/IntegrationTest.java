@@ -138,7 +138,8 @@ public class IntegrationTest {
 
         final HostConfig hostConfig = HostConfig.builder()
                 .portBindings(portBindings)
-                .binds(HostConfig.Bind.from(testPath + "/lib").to("/var/lib/go-server").build())
+                .binds(HostConfig.Bind.from(testPath + "/lib").to("/var/lib/go-server").build(),
+                       HostConfig.Bind.from(testPath + "/log").to("/var/log/go-server").build())
                 .build();
 
         // Create container with exposed ports
@@ -260,11 +261,13 @@ public class IntegrationTest {
             @Override
             public void onClose( int code, String reason, boolean remote ) {
                 System.out.println("Closed connection");
+                lock.countDown();
             }
 
             @Override
             public void onError( Exception ex ) {
                 ex.printStackTrace();
+                lock.countDown();
             }
         };
 

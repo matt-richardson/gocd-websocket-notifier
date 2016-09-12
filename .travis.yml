@@ -24,6 +24,7 @@ after_script:
 - echo $PWD
 - ls -alR
 - cat $PWD/target/docker-testing/lib/go-server.log
+- cat $PWD/target/docker-testing/log/go-server.out.log
 before_deploy:
 - git config --global user.email "builds@travis-ci.com"
 - git config --global user.name "Travis CI"
