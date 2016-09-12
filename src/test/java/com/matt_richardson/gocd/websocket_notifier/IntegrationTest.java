@@ -89,6 +89,9 @@ public class IntegrationTest {
             try (LogStream stream = docker.logs(containerId, DockerClient.LogsParam.stdout())) {
                 String message = stream.readFully();
                 System.out.println(message);
+                if (message.contains("Error starting Go Server.")) {
+                    throw new Exception("Error starting Go Server.");
+                }
                 if (message.contains("Go Server has started on port 8153 inside this container")) {
                     final ContainerInfo info = docker.inspectContainer(containerId);
                     httpPort = info.networkSettings().ports().get("8153/tcp").get(0).hostPort();
