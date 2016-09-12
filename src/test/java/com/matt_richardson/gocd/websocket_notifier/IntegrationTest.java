@@ -54,8 +54,8 @@ public class IntegrationTest {
         String pluginLocation = testPath + "/lib/plugins/external";
         System.out.println("Creating path " + pluginLocation);
         Files.createDirectories(Paths.get(pluginLocation));
-        String srcPath = testPath + "/../gocd-websocket-notifier-1.0-SNAPSHOT.jar";
-        String destPath = testPath + "/lib/plugins/external/gocd-websocket-notifier-1.0-SNAPSHOT.jar";
+        String srcPath = testPath + "/../gocd-websocket-notifier*.jar";
+        String destPath = testPath + "/lib/plugins/external/gocd-websocket-notifier.jar";
         System.out.println("Copying '" + srcPath + "' to '" + destPath + "'");
         Files.copy(Paths.get(srcPath), Paths.get(destPath), REPLACE_EXISTING);
     }
