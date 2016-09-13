@@ -40,12 +40,12 @@ public class IntegrationTest {
         CleanupTestFolder(testPath);
         SetupTestFolder(testPath);
         SetupContainer(testPath);
-        RunContainer();
+        RunContainer(testPath);
     }
 
     private static String DetermineTestPath() throws UnsupportedEncodingException {
         String path = IntegrationTest.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        String testPath = URLDecoder.decode(path, "UTF-8") + "../docker-testing";
+        String testPath = Paths.get(URLDecoder.decode(path, "UTF-8")).resolve("../docker-testing").normalize().toString();
         System.out.println("Test path is " + testPath);
         return testPath;
     }
@@ -76,19 +76,52 @@ public class IntegrationTest {
         element.delete();
     }
 
-    private static void RunContainer() throws Exception {
-        // Start container
+    private static void CopyJarIntoContainer(String testPath) throws IOException, DockerException, InterruptedException {
+        String srcPath = testPath + "/lib/plugins/external/gocd-websocket-notifier.jar";
+        String destPath = "/var/lib/go-server/plugins/external";
+        String command = "docker exec -i " + containerId + " mkdir -p /var/lib/go-server/plugins/external";
+        exec(command);
+
+        command = "docker cp " + srcPath + " " + containerId + ":" + destPath;
+        exec(command);
+
+        command = "docker exec -i " + containerId + " chown -R go:go /var/lib/go-server/plugins";
+        exec(command);
+
+        command = "docker exec -i " + containerId + " ls -alR /var/lib/go-server/plugins";
+        exec(command);
+    }
+
+    private static void exec(String command) throws IOException, InterruptedException {
+        Runtime rt = Runtime.getRuntime();
+        System.out.println(command);
+        Process pr = rt.exec(command);
+        BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+
+        String line;
+
+        while((line=input.readLine()) != null) {
+            System.out.println(line);
+        }
+
+        int exitVal = pr.waitFor();
+        System.out.println("Exited with error code "+exitVal);
+    }
+
+    private static void RunContainer(String testPath) throws Exception {
         System.out.println("Starting container " + containerId + "...");
         docker.startContainer(containerId);
 
-        // Inspect container
+        CopyJarIntoContainer(testPath);
 
+        String lastMessage = "";
         long t = System.currentTimeMillis();
         long end = t + (20 * 60 * 1000);
         while(System.currentTimeMillis() < end) {
             try (LogStream stream = docker.logs(containerId, DockerClient.LogsParam.stdout(), DockerClient.LogsParam.stderr())) {
                 String message = stream.readFully();
-                System.out.println(message);
+                System.out.println(message.substring(lastMessage.length()));
+                lastMessage = message;
                 if (message.contains("Error starting Go Server.")) {
                     throw new Exception("Error starting Go Server.");
                 }
@@ -110,62 +143,43 @@ public class IntegrationTest {
     }
 
     private static void SetupContainer(String testPath) throws DockerCertificateException, DockerException, InterruptedException, IOException {
-        // Create a client based on DOCKER_HOST and DOCKER_CERT_PATH env vars
+        // Create client based on DOCKER_HOST and DOCKER_CERT_PATH env vars
         docker = DefaultDockerClient.fromEnv().build();
 
-        // Pull an image
         docker.pull("gocd/gocd-server:latest");
 
         // Bind container ports to host ports
-        final String[] ports = {"8153", "8154", "8887"};
         final Map<String, List<PortBinding>> portBindings = new HashMap<>();
-        for (String port : ports) {
-            List<PortBinding> hostPorts = new ArrayList<>();
-            hostPorts.add(PortBinding.of("0.0.0.0", port));
-            portBindings.put(port, hostPorts);
-        }
-
-        // Bind container port 443 to an automatically allocated available host port.
-        List<PortBinding> randomPort = new ArrayList<>();
-        randomPort.add(PortBinding.randomPort("0.0.0.0"));
-        portBindings.put("8153", randomPort);
-        randomPort = new ArrayList<>();
-        randomPort.add(PortBinding.randomPort("0.0.0.0"));
-        portBindings.put("8154", randomPort);
-        randomPort = new ArrayList<>();
-        randomPort.add(PortBinding.randomPort("0.0.0.0"));
-        portBindings.put("8887", randomPort);
+        portBindings.put("8153", getRandomPort());
+        portBindings.put("8154", getRandomPort());
+        portBindings.put("8887", getRandomPort());
 
         final HostConfig hostConfig = HostConfig.builder()
                 .portBindings(portBindings)
-                .binds(HostConfig.Bind.from(testPath + "/lib").to("/var/lib/go-server").build())
+                .privileged(true)
                 .build();
 
         // Create container with exposed ports
         final ContainerConfig containerConfig = ContainerConfig.builder()
                 .hostConfig(hostConfig)
                 .image("gocd/gocd-server:latest")
-                .exposedPorts(ports)
+                .exposedPorts("8153", "8154", "8887")
                 .build();
 
         final ContainerCreation creation = docker.createContainer(containerConfig);
         containerId = creation.id();
     }
 
+    private static List<PortBinding> getRandomPort() {
+        List<PortBinding> randomPort = new ArrayList<>();
+        randomPort.add(PortBinding.randomPort("0.0.0.0"));
+        return randomPort;
+    }
+
     @AfterClass
     public static void ShutdownContainer() throws Exception {
 
         if (containerId != null) {
-
-            System.out.println("Reading '/var/lib/go-server/go-server.log'");
-            final String[] command = {"cat", "/var/lib/go-server/go-server.log"};
-            final String execId = docker.execCreate(
-                    containerId, command, DockerClient.ExecCreateParam.attachStdout(),
-                    DockerClient.ExecCreateParam.attachStderr());
-            final LogStream output = docker.execStart(execId);
-            final String execOutput = output.readFully();
-            System.out.println(execOutput);
-
             System.out.println("Stopping container " + containerId + "...");
             docker.stopContainer(containerId, 10);
 
@@ -251,20 +265,22 @@ public class IntegrationTest {
     public void testWebSocketReceivesMessageOnNewPipeline() throws Exception
     {
         final CountDownLatch lock = new CountDownLatch(1);
-        final String[] result = {null};
+        final String[] receivedMessages = {null};
+        final boolean[] connectionOpened = {false};
 
         WebSocketClient mWs = new WebSocketClient( new URI( "ws://localhost:" + websocketsPort ), new Draft_10() )
         {
             @Override
             public void onMessage( String message ) {
                 System.out.println("Received websocket message: " + message);
-                result[0] = message;
+                receivedMessages[0] = message;
                 lock.countDown();
             }
 
             @Override
             public void onOpen( ServerHandshake handshake ) {
                 System.out.println("Opened connection to ws://localhost:" + websocketsPort);
+                connectionOpened[0] = true;
             }
 
             @Override
@@ -288,10 +304,14 @@ public class IntegrationTest {
         unPausePipeline(pipelineName);
         System.out.println("Waiting for websocket message after pipeline is triggered");
         lock.await(5, TimeUnit.MINUTES);
+
+        if (connectionOpened.length == 0 || connectionOpened[0] == false)
+            throw new Exception("Failed to connect to websocket endpoint");
+
         mWs.close();
-        if (result.length == 0 || result[0] == null)
+        if (receivedMessages.length == 0 || receivedMessages[0] == null)
             throw new Exception("Didn't get a message over the websocket.");
         String expectedPattern = "\\{\"pipeline\":\\{\"name\":\"" + pipelineName + "\",\"counter\":\"1\",\"group\":\"first\",\"build-cause\":\\[\\{\"material\":\\{\"type\":\"git\",\"git-configuration\":\\{\"shallow-clone\":false,\"branch\":\"master\",\"url\":\"https://github.com/matt-richardson/gocd-websocket-notifier.git\"}},\"changed\":true,\"modifications\":\\[\\{\"revision\":\"[0-9a-f]*\",\"modified-time\":\".*\",\"data\":\\{}}]}],\"stage\":\\{\"name\":\"defaultStage\",\"counter\":\"1\",\"approval-type\":\"success\",\"approved-by\":\".*\",\"state\":\"Building\",\"result\":\"Unknown\",\"create-time\":\".*\",\"last-transition-time\":\"\",\"jobs\":\\[\\{\"name\":\"defaultJob\",\"schedule-time\":\".*\",\"complete-time\":\"\",\"state\":\"Scheduled\",\"result\":\"Unknown\"}]}},\"x-pipeline-instance-details\":\\{\"build_cause\":\\{\"approver\":\".*\",\"material_revisions\":\\[\\{\"modifications\":\\[\\{\"email_address\":null,\"id\":1,\"modified_time\":\\d*,\"user_name\":\".*\",\"comment\":\".*\",\"revision\":\"[0-9a-f]*\"}],\"material\":\\{\"description\":\"URL: https://github.com/matt-richardson/gocd-websocket-notifier.git, Branch: master\",\"fingerprint\":\".*\",\"type\":\"Git\",\"id\":\\d*},\"changed\":true}],\"trigger_forced\":.*,\"trigger_message\":\".*\"},\"name\":\"" + pipelineName + "\",\"natural_order\":1.0,\"can_run\":false,\"comment\":null,\"stages\":\\[\\{\"name\":\"defaultStage\",\"approved_by\":\".*\",\"jobs\":\\[\\{\"name\":\"defaultJob\",\"result\":\"Unknown\",\"state\":\"Scheduled\",\"id\":1,\"scheduled_date\":\\d*}],\"can_run\":false,\"result\":\"Unknown\",\"approval_type\":\"success\",\"counter\":\"1\",\"id\":1,\"operate_permission\":true,\"rerun_of_counter\":null,\"scheduled\":true}],\"counter\":1,\"id\":1,\"preparing_to_schedule\":false,\"label\":\"1\"}}";
-        Assert.assertTrue(result[0].matches(expectedPattern));
+        Assert.assertTrue(receivedMessages[0].matches(expectedPattern));
     }
 }
