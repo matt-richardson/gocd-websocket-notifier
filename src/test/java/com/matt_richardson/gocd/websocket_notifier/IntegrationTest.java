@@ -126,6 +126,7 @@ public class IntegrationTest {
         final HostConfig hostConfig = HostConfig.builder()
                 .portBindings(portBindings)
                 .binds(HostConfig.Bind.from(testPath + "/lib").to("/var/lib/go-server").build())
+                .privileged(true)
                 .build();
 
         // Create container with exposed ports
