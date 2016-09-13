@@ -110,31 +110,16 @@ public class IntegrationTest {
     }
 
     private static void SetupContainer(String testPath) throws DockerCertificateException, DockerException, InterruptedException, IOException {
-        // Create a client based on DOCKER_HOST and DOCKER_CERT_PATH env vars
+        // Create client based on DOCKER_HOST and DOCKER_CERT_PATH env vars
         docker = DefaultDockerClient.fromEnv().build();
 
-        // Pull an image
         docker.pull("gocd/gocd-server:latest");
 
         // Bind container ports to host ports
-        final String[] ports = {"8153", "8154", "8887"};
         final Map<String, List<PortBinding>> portBindings = new HashMap<>();
-        for (String port : ports) {
-            List<PortBinding> hostPorts = new ArrayList<>();
-            hostPorts.add(PortBinding.of("0.0.0.0", port));
-            portBindings.put(port, hostPorts);
-        }
-
-        // Bind container port 443 to an automatically allocated available host port.
-        List<PortBinding> randomPort = new ArrayList<>();
-        randomPort.add(PortBinding.randomPort("0.0.0.0"));
-        portBindings.put("8153", randomPort);
-        randomPort = new ArrayList<>();
-        randomPort.add(PortBinding.randomPort("0.0.0.0"));
-        portBindings.put("8154", randomPort);
-        randomPort = new ArrayList<>();
-        randomPort.add(PortBinding.randomPort("0.0.0.0"));
-        portBindings.put("8887", randomPort);
+        portBindings.put("8153", getRandomPort());
+        portBindings.put("8154", getRandomPort());
+        portBindings.put("8887", getRandomPort());
 
         final HostConfig hostConfig = HostConfig.builder()
                 .portBindings(portBindings)
@@ -145,11 +130,17 @@ public class IntegrationTest {
         final ContainerConfig containerConfig = ContainerConfig.builder()
                 .hostConfig(hostConfig)
                 .image("gocd/gocd-server:latest")
-                .exposedPorts(ports)
+                .exposedPorts("8153", "8154", "8887")
                 .build();
 
         final ContainerCreation creation = docker.createContainer(containerConfig);
         containerId = creation.id();
+    }
+
+    private static List<PortBinding> getRandomPort() {
+        List<PortBinding> randomPort = new ArrayList<>();
+        randomPort.add(PortBinding.randomPort("0.0.0.0"));
+        return randomPort;
     }
 
     @AfterClass
