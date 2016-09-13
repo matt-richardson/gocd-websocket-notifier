@@ -77,15 +77,6 @@ public class IntegrationTest {
     }
 
     private static void CopyJarIntoContainer(String testPath) throws IOException, DockerException, InterruptedException {
-//        System.out.println("creating dir");
-//        final String[] command = {"mkdir", "-p", "/var/lib/go-server/plugins/external"};
-//        String execId = docker.execCreate(
-//                containerId, command, DockerClient.ExecCreateParam.attachStdout(),
-//                DockerClient.ExecCreateParam.attachStderr());
-//        try (final LogStream output = docker.execStart(execId)) {
-//            System.out.println(output.readFully());
-//        }
-
         String srcPath = testPath + "/lib/plugins/external/gocd-websocket-notifier.jar";
         String destPath = "/var/lib/go-server/plugins/external";
         String command = "docker exec -i " + containerId + " mkdir -p /var/lib/go-server/plugins/external";
@@ -99,18 +90,6 @@ public class IntegrationTest {
 
         command = "docker exec -i " + containerId + " ls -alR /var/lib/go-server/plugins";
         exec(command);
-
-//        System.out.println("Copying jar from " + srcPath + "' into container to '" + destPath + "'.");
-//        docker.copyToContainer(Paths.get(srcPath).normalize(), containerId, destPath);
-
-//        System.out.println("Changing owner on plugins dir");
-//        final String[] chownCommand = {"sudo", "chown", "-R", "go:go", "/var/lib/go-server/plugins"};
-//        execId = docker.execCreate(
-//                containerId, chownCommand, DockerClient.ExecCreateParam.attachStdout(),
-//                DockerClient.ExecCreateParam.attachStderr());
-//        try (final LogStream output = docker.execStart(execId)) {
-//            System.out.println(output.readFully());
-//        }
     }
 
     private static void exec(String command) throws IOException, InterruptedException {
@@ -119,7 +98,7 @@ public class IntegrationTest {
         Process pr = rt.exec(command);
         BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
 
-        String line=null;
+        String line;
 
         while((line=input.readLine()) != null) {
             System.out.println(line);
