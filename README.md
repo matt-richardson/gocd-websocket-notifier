@@ -4,7 +4,7 @@
 
 WebSocket based GoCD build notifier
 
-Listens to notifications from the GoCD (15.1+) notification api, and publishes them over websockets.
+Listens to notifications from the GoCD (15.2+) notification api, and publishes them over websockets.
 This initial use case is for low impact, fast build notifiers, such as
 [gocd-windows-tray-build-notifier](https://github.com/matt-richardson/gocd-windows-tray-build-notifier).
 
@@ -21,16 +21,13 @@ appreciated.
 Download jar from releases & place it in /plugins/external & restart Go Server.
 
 ## Configuration
-Plugin listens on port 8887 by default.
-To edit this, create a (standard java properties) file with the name
+Plugin listens on port 8887 on all ip addresses by default.
+To edit these, create a (standard java properties) file with the name
 gocd-websocket-notifier.conf in the home directory of the user that runs go.
 ````
 port=8888
+host=127.0.0.1
 ````
-
-## Known clients
-At this point the only known client of this is [gocd-windows-tray-build-notifier](https://github.com/matt-richardson/gocd-windows-tray-build-notifier).
-However, I hope that this will be useful to others.
 
 ## Planned Enhancements
 * Send [a reply](http://www.go.cd/documentation/developer/writing_go_plugins/notification/version_1_0/stage_status_notification.html#response---from-the-plugin)
