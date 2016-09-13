@@ -86,11 +86,12 @@ public class IntegrationTest {
         LogStream output = docker.execStart(execId);
         System.out.println(output.readFully());
 
-        System.out.println("Copying jar from " + srcPath + "' into container");
-        docker.copyToContainer(Paths.get(srcPath).normalize(), containerId, "/var/lib/go-server/plugins/external");
+        String destPath = "/var/lib/go-server/plugins/external";
+        System.out.println("Copying jar from " + srcPath + "' into container to '" + destPath + "'.");
+        docker.copyToContainer(Paths.get(srcPath).normalize(), containerId, destPath);
 
         System.out.println("Changing owner on plugins dir");
-        final String[] chownCommand = {"chown", "-R", "go:go", "/var/lib/go-server"};
+        final String[] chownCommand = {"chown", "-R", "go:go", "/var/lib/go-server/plugins"};
         execId = docker.execCreate(
                 containerId, chownCommand, DockerClient.ExecCreateParam.attachStdout(),
                 DockerClient.ExecCreateParam.attachStderr());
