@@ -1,6 +1,6 @@
 env:
   global:
-  - VERSION=0.4.1
+  - VERSION=0.4.2
   - SHORT_COMMIT_SHA=$(git rev-parse --short HEAD)
   - RELEASE_VERSION=$VERSION+build.$TRAVIS_BUILD_NUMBER.sha.$SHORT_COMMIT_SHA
   - secure: c4X2AkCdg2nNqnWdupl8vLR/HkuQ149Kcgb7qFDEjmm0Kps90iMZBsIX4MJEEvpGQ6qxQWZsgJYuiCk3QGaeUFdzd/aeTXzUsaw40pkDWfAvAlAvuIbgYYWSeIt2SIUpczr9twbVM1p9+HWZQGIhby1OVGPPHpsJkgeM2aboBCw=
