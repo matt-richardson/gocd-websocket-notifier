@@ -19,11 +19,8 @@ before_install:
 install:
 - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U
 script:
-- mvn package -DfinalName=gocd-websocket-notifier -DfinalVersion=$RELEASE_VERSION -Dtest=\!IntegrationTest && mvn test -Dtest=IntegrationTest
+- mvn package -DfinalName=gocd-websocket-notifier -DfinalVersion=$RELEASE_VERSION -Dtest=\!IntegrationTest
 after_script:
-- echo $PWD
-- ls -alR
-- cat $PWD/target/docker-testing/lib/go-server.log
 - cat $PWD/target/docker-testing/log/go-server.out.log
 before_deploy:
 - git config --global user.email "builds@travis-ci.com"
