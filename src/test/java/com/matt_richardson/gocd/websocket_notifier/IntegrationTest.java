@@ -86,13 +86,20 @@ public class IntegrationTest {
 //            System.out.println(output.readFully());
 //        }
 
-        String srcPath = testPath + "/lib/plugins/external";
+        Thread.sleep(5000);
+        String srcPath = testPath + "/lib/plugins/external/gocd-websocket-notifier.jar";
         String destPath = "/var/lib/go-server/plugins/external";
-        Runtime rt = Runtime.getRuntime();
-        Process pr = rt.exec("docker exec -i " + containerId + " mkdir -p /var/lib/go-server/plugins/external && " +
-                             "docker cp " + srcPath + " " + containerId + ":" + destPath + " && " +
-                             "docker exec -i " + containerId + " chown -R go:go /var/lib/go-server/plugins");
+        String command = "docker exec -i " + containerId + " mkdir -p /var/lib/go-server/plugins/external";
+        exec(command);
 
+        command = "docker cp " + srcPath + " " + containerId + ":" + destPath;
+        exec(command);
+
+        command = "docker exec -i " + containerId + " chown -R go:go /var/lib/go-server/plugins";
+        exec(command);
+
+        command = "docker exec -i " + containerId + " ls -alR /var/lib/go-server/plugins";
+        exec(command);
 
 //        System.out.println("Copying jar from " + srcPath + "' into container to '" + destPath + "'.");
 //        docker.copyToContainer(Paths.get(srcPath).normalize(), containerId, destPath);
@@ -105,6 +112,22 @@ public class IntegrationTest {
 //        try (final LogStream output = docker.execStart(execId)) {
 //            System.out.println(output.readFully());
 //        }
+    }
+
+    private static void exec(String command) throws IOException, InterruptedException {
+        Runtime rt = Runtime.getRuntime();
+        System.out.println(command);
+        Process pr = rt.exec(command);
+        BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+
+        String line=null;
+
+        while((line=input.readLine()) != null) {
+            System.out.println(line);
+        }
+
+        int exitVal = pr.waitFor();
+        System.out.println("Exited with error code "+exitVal);
     }
 
     private static void RunContainer(String testPath) throws Exception {
