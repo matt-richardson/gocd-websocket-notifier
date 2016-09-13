@@ -77,28 +77,34 @@ public class IntegrationTest {
     }
 
     private static void CopyJarIntoContainer(String testPath) throws IOException, DockerException, InterruptedException {
-        System.out.println("creating dir");
-        final String[] command = {"mkdir", "-p", "/var/lib/go-server/plugins/external"};
-        String execId = docker.execCreate(
-                containerId, command, DockerClient.ExecCreateParam.attachStdout(),
-                DockerClient.ExecCreateParam.attachStderr());
-        try (final LogStream output = docker.execStart(execId)) {
-            System.out.println(output.readFully());
-        }
+//        System.out.println("creating dir");
+//        final String[] command = {"mkdir", "-p", "/var/lib/go-server/plugins/external"};
+//        String execId = docker.execCreate(
+//                containerId, command, DockerClient.ExecCreateParam.attachStdout(),
+//                DockerClient.ExecCreateParam.attachStderr());
+//        try (final LogStream output = docker.execStart(execId)) {
+//            System.out.println(output.readFully());
+//        }
 
         String srcPath = testPath + "/lib/plugins/external";
         String destPath = "/var/lib/go-server/plugins/external";
-        System.out.println("Copying jar from " + srcPath + "' into container to '" + destPath + "'.");
-        docker.copyToContainer(Paths.get(srcPath).normalize(), containerId, destPath);
+        Runtime rt = Runtime.getRuntime();
+        Process pr = rt.exec("docker exec -i " + containerId + " mkdir -p /var/lib/go-server/plugins/external && " +
+                             "docker cp " + srcPath + " " + containerId + ":" + destPath + " && " +
+                             "docker exec -i " + containerId + " chown -R go:go /var/lib/go-server/plugins");
 
-        System.out.println("Changing owner on plugins dir");
-        final String[] chownCommand = {"sudo", "chown", "-R", "go:go", "/var/lib/go-server/plugins"};
-        execId = docker.execCreate(
-                containerId, chownCommand, DockerClient.ExecCreateParam.attachStdout(),
-                DockerClient.ExecCreateParam.attachStderr());
-        try (final LogStream output = docker.execStart(execId)) {
-            System.out.println(output.readFully());
-        }
+
+//        System.out.println("Copying jar from " + srcPath + "' into container to '" + destPath + "'.");
+//        docker.copyToContainer(Paths.get(srcPath).normalize(), containerId, destPath);
+
+//        System.out.println("Changing owner on plugins dir");
+//        final String[] chownCommand = {"sudo", "chown", "-R", "go:go", "/var/lib/go-server/plugins"};
+//        execId = docker.execCreate(
+//                containerId, chownCommand, DockerClient.ExecCreateParam.attachStdout(),
+//                DockerClient.ExecCreateParam.attachStderr());
+//        try (final LogStream output = docker.execStart(execId)) {
+//            System.out.println(output.readFully());
+//        }
     }
 
     private static void RunContainer(String testPath) throws Exception {
