@@ -92,7 +92,7 @@ public class IntegrationTest {
         docker.copyToContainer(Paths.get(srcPath).normalize(), containerId, destPath);
 
         System.out.println("Changing owner on plugins dir");
-        final String[] chownCommand = {"chown", "-R", "go:go", "/var/lib/go-server/plugins"};
+        final String[] chownCommand = {"sudo", "chown", "-R", "go:go", "/var/lib/go-server/plugins"};
         execId = docker.execCreate(
                 containerId, chownCommand, DockerClient.ExecCreateParam.attachStdout(),
                 DockerClient.ExecCreateParam.attachStderr());
