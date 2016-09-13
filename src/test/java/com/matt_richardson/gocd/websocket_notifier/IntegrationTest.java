@@ -114,12 +114,14 @@ public class IntegrationTest {
 
         CopyJarIntoContainer(testPath);
 
+        String lastMessage = "";
         long t = System.currentTimeMillis();
         long end = t + (20 * 60 * 1000);
         while(System.currentTimeMillis() < end) {
             try (LogStream stream = docker.logs(containerId, DockerClient.LogsParam.stdout(), DockerClient.LogsParam.stderr())) {
                 String message = stream.readFully();
-                System.out.println(message);
+                System.out.println(message.substring(lastMessage.length()));
+                lastMessage = message;
                 if (message.contains("Error starting Go Server.")) {
                     throw new Exception("Error starting Go Server.");
                 }
