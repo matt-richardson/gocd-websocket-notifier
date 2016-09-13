@@ -157,8 +157,8 @@ public class IntegrationTest {
 
         if (containerId != null) {
 
-            System.out.println("Reading '/var/lib/go-server/go-server.log'");
-            final String[] command = {"cat", "/var/lib/go-server/go-server.log"};
+            System.out.println("Reading '/var/log/go-server/go-server.log'");
+            final String[] command = {"cat", "/var/log/go-server/go-server.log"};
             final String execId = docker.execCreate(
                     containerId, command, DockerClient.ExecCreateParam.attachStdout(),
                     DockerClient.ExecCreateParam.attachStderr());
