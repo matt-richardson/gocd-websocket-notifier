@@ -86,7 +86,6 @@ public class IntegrationTest {
 //            System.out.println(output.readFully());
 //        }
 
-        Thread.sleep(5000);
         String srcPath = testPath + "/lib/plugins/external/gocd-websocket-notifier.jar";
         String destPath = "/var/lib/go-server/plugins/external";
         String command = "docker exec -i " + containerId + " mkdir -p /var/lib/go-server/plugins/external";
