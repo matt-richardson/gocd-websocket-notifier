@@ -40,7 +40,7 @@ public class IntegrationTest {
         CleanupTestFolder(testPath);
         SetupTestFolder(testPath);
         SetupContainer(testPath);
-        RunContainer();
+        RunContainer(testPath);
     }
 
     private static String DetermineTestPath() throws UnsupportedEncodingException {
@@ -76,12 +76,33 @@ public class IntegrationTest {
         element.delete();
     }
 
-    private static void RunContainer() throws Exception {
-        // Start container
+    private static void CopyJarIntoContainer(String testPath) throws IOException, DockerException, InterruptedException {
+        String srcPath = testPath + "/lib/plugins/external";
+        System.out.println("creating dir");
+        final String[] command = {"mkdir", "-p", "/var/lib/go-server/plugins/external"};
+        String execId = docker.execCreate(
+                containerId, command, DockerClient.ExecCreateParam.attachStdout(),
+                DockerClient.ExecCreateParam.attachStderr());
+        LogStream output = docker.execStart(execId);
+        System.out.println(output.readFully());
+
+        System.out.println("Copying jar from " + srcPath + "' into container");
+        docker.copyToContainer(Paths.get(srcPath).normalize(), containerId, "/var/lib/go-server/plugins/external");
+
+        System.out.println("Changing owner on plugins dir");
+        final String[] chownCommand = {"chown", "-R", "go:go", "/var/lib/go-server"};
+        execId = docker.execCreate(
+                containerId, chownCommand, DockerClient.ExecCreateParam.attachStdout(),
+                DockerClient.ExecCreateParam.attachStderr());
+        output = docker.execStart(execId);
+        System.out.println(output.readFully());
+    }
+
+    private static void RunContainer(String testPath) throws Exception {
         System.out.println("Starting container " + containerId + "...");
         docker.startContainer(containerId);
 
-        // Inspect container
+        CopyJarIntoContainer(testPath);
 
         long t = System.currentTimeMillis();
         long end = t + (20 * 60 * 1000);
@@ -121,11 +142,8 @@ public class IntegrationTest {
         portBindings.put("8154", getRandomPort());
         portBindings.put("8887", getRandomPort());
 
-        System.out.println("Bind is '" + HostConfig.Bind.from(testPath + "/lib").to("/var/lib/go-server").build() + "'");
-
         final HostConfig hostConfig = HostConfig.builder()
                 .portBindings(portBindings)
-                .binds(HostConfig.Bind.from(testPath + "/lib").to("/var/lib/go-server").build())
                 .privileged(true)
                 .build();
 
@@ -150,16 +168,6 @@ public class IntegrationTest {
     public static void ShutdownContainer() throws Exception {
 
         if (containerId != null) {
-
-            System.out.println("Reading '/var/log/go-server/go-server.log'");
-            final String[] command = {"cat", "/var/log/go-server/go-server.log"};
-            final String execId = docker.execCreate(
-                    containerId, command, DockerClient.ExecCreateParam.attachStdout(),
-                    DockerClient.ExecCreateParam.attachStderr());
-            final LogStream output = docker.execStart(execId);
-            final String execOutput = output.readFully();
-            System.out.println(execOutput);
-
             System.out.println("Stopping container " + containerId + "...");
             docker.stopContainer(containerId, 10);
 
