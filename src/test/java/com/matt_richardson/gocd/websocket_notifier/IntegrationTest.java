@@ -45,7 +45,7 @@ public class IntegrationTest {
 
     private static String DetermineTestPath() throws UnsupportedEncodingException {
         String path = IntegrationTest.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-        String testPath = URLDecoder.decode(path, "UTF-8") + "../docker-testing";
+        String testPath = Paths.get(URLDecoder.decode(path, "UTF-8")).resolve("../docker-testing").normalize().toString();
         System.out.println("Test path is " + testPath);
         return testPath;
     }
@@ -121,9 +121,11 @@ public class IntegrationTest {
         portBindings.put("8154", getRandomPort());
         portBindings.put("8887", getRandomPort());
 
+        System.out.println("Bind is '" + HostConfig.Bind.from(testPath + "/lib").to("/var/lib/go-server").build() + "'");
+
         final HostConfig hostConfig = HostConfig.builder()
                 .portBindings(portBindings)
-                //.binds(HostConfig.Bind.from(testPath + "/lib").to("/var/lib/go-server").build())
+                .binds(HostConfig.Bind.from(testPath + "/lib").to("/var/lib/go-server").build())
                 .build();
 
         // Create container with exposed ports
