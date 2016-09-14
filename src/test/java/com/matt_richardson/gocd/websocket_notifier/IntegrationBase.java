@@ -23,7 +23,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public abstract class IntegrationBase {
     private static DockerClient docker = null;
     private static String containerId = null;
-    private static String httpPort;
+    static String httpPort;
     static String websocketsPort;
     static GoCDApi goCdApi;
 

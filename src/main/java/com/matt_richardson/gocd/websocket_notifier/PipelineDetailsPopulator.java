@@ -14,6 +14,15 @@ import java.net.URL;
 
 public class PipelineDetailsPopulator {
     private static Logger LOGGER = Logger.getLoggerFor(GoNotificationPlugin.class);
+    private int httpPort;
+
+    public PipelineDetailsPopulator() {
+        this.httpPort = 8153;
+    }
+
+    public PipelineDetailsPopulator(int httpPort) {
+        this.httpPort = httpPort;
+    }
 
     String mergeInPipelineInstanceDetails(JsonElement notification, JsonElement pipelineInstance)
     {
@@ -23,7 +32,7 @@ public class PipelineDetailsPopulator {
     }
 
     JsonElement downloadPipelineInstanceDetails(String pipelineName) throws IOException {
-        String sURL = "http://localhost:8153/go/api/pipelines/" + pipelineName + "/history";
+        String sURL = "http://localhost:" + httpPort + "/go/api/pipelines/" + pipelineName + "/history";
 
         URL url = new URL(sURL);
         HttpURLConnection request = (HttpURLConnection) url.openConnection();

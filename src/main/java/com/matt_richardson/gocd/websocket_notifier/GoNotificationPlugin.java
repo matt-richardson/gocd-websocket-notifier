@@ -14,8 +14,7 @@ import java.net.UnknownHostException;
 import java.util.*;
 
 @Extension
-public class GoNotificationPlugin
-        implements GoPlugin {
+public class GoNotificationPlugin implements GoPlugin {
     private static Logger LOGGER = Logger.getLoggerFor(GoNotificationPlugin.class);
     public static final String EXTENSION_TYPE = "notification";
     private static final List<String> goSupportedVersions = Arrays.asList("1.0");
@@ -47,6 +46,14 @@ public class GoNotificationPlugin
                 LOGGER.error("Failed to launch WebSocket server on port: " + port, e);
             }
         }
+    }
+
+    public GoNotificationPlugin() {
+
+    }
+
+    public GoNotificationPlugin(WebSocketPipelineListener pipelineListener) {
+        this.pipelineListener = pipelineListener;
     }
 
     public GoPluginApiResponse handle(GoPluginApiRequest goPluginApiRequest) {
