@@ -12,12 +12,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import javax.net.ssl.HttpsURLConnection;
+
 public class PipelineDetailsPopulator {
     private static Logger LOGGER = Logger.getLoggerFor(GoNotificationPlugin.class);
     private int httpPort;
-
+	
     public PipelineDetailsPopulator() {
-        this.httpPort = 8153;
+        this.httpPort = 8443;
     }
 
     public PipelineDetailsPopulator(int httpPort) {
@@ -32,10 +34,21 @@ public class PipelineDetailsPopulator {
     }
 
     JsonElement downloadPipelineInstanceDetails(String pipelineName) throws IOException {
-        String sURL = "http://localhost:" + httpPort + "/go/api/pipelines/" + pipelineName + "/history";
+    	javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(
+    			new javax.net.ssl.HostnameVerifier(){
+    				
+    				public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
+    					if (hostname.equals("localhost")) {
+    						return true;
+    					}
+    					return false;
+    				}
+    			});
+    	
+    	String sURL = "https://localhost:" + httpPort + "/go/api/pipelines/" + pipelineName + "/history";
 
         URL url = new URL(sURL);
-        HttpURLConnection request = (HttpURLConnection) url.openConnection();
+        HttpsURLConnection request = (HttpsURLConnection) url.openConnection();
         request.connect();
 
         JsonParser parser = new JsonParser();
