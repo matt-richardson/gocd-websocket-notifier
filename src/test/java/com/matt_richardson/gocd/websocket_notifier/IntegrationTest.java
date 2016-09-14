@@ -28,18 +28,17 @@ import java.util.concurrent.TimeUnit;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class IntegrationTest {
-    static DockerClient docker = null;
-    static String containerId = null;
-    static String httpPort;
-    static String httpsPort;
-    static String websocketsPort;
+    private static DockerClient docker = null;
+    private static String containerId = null;
+    private static String httpPort;
+    private static String websocketsPort;
 
     @BeforeClass
     public static void BeforeAnyTest() throws Exception {
         String testPath = DetermineTestPath();
         CleanupTestFolder(testPath);
         SetupTestFolder(testPath);
-        SetupContainer(testPath);
+        SetupContainer();
         RunContainer(testPath);
     }
 
@@ -67,13 +66,16 @@ public class IntegrationTest {
         deleteFile(new File(testPath));
     }
 
-    public static void deleteFile(File element) {
+    private static boolean deleteFile(File element) {
         if (element.isDirectory()) {
-            for (File sub : element.listFiles()) {
-                deleteFile(sub);
+            File[] files = element.listFiles();
+            if (files != null) {
+                for (File sub : files) {
+                    deleteFile(sub);
+                }
             }
         }
-        element.delete();
+        return element.delete();
     }
 
     private static void CopyJarIntoContainer(String testPath) throws IOException, DockerException, InterruptedException {
@@ -128,7 +130,7 @@ public class IntegrationTest {
                 if (message.contains("Go Server has started on port 8153 inside this container")) {
                     final ContainerInfo info = docker.inspectContainer(containerId);
                     httpPort = info.networkSettings().ports().get("8153/tcp").get(0).hostPort();
-                    httpsPort = info.networkSettings().ports().get("8154/tcp").get(0).hostPort();
+                    String httpsPort = info.networkSettings().ports().get("8154/tcp").get(0).hostPort();
                     websocketsPort = info.networkSettings().ports().get("8887/tcp").get(0).hostPort();
 
                     System.out.println("HTTP port is " + httpPort);
@@ -142,7 +144,7 @@ public class IntegrationTest {
         throw new Exception("GoCD didn't launch within timeout");
     }
 
-    private static void SetupContainer(String testPath) throws DockerCertificateException, DockerException, InterruptedException, IOException {
+    private static void SetupContainer() throws DockerCertificateException, DockerException, InterruptedException, IOException {
         // Create client based on DOCKER_HOST and DOCKER_CERT_PATH env vars
         docker = DefaultDockerClient.fromEnv().build();
 
@@ -226,7 +228,7 @@ public class IntegrationTest {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
-        StringBuffer response = new StringBuffer();
+        StringBuilder response = new StringBuilder();
 
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
@@ -250,14 +252,13 @@ public class IntegrationTest {
 
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
         String inputLine;
-        StringBuffer response = new StringBuffer();
+        StringBuilder response = new StringBuilder();
 
         while ((inputLine = in.readLine()) != null) {
             response.append(inputLine);
         }
         in.close();
 
-        //print result
         System.out.println(response.toString());
     }
 
@@ -305,7 +306,7 @@ public class IntegrationTest {
         System.out.println("Waiting for websocket message after pipeline is triggered");
         lock.await(5, TimeUnit.MINUTES);
 
-        if (connectionOpened.length == 0 || connectionOpened[0] == false)
+        if (connectionOpened.length == 0 || !connectionOpened[0])
             throw new Exception("Failed to connect to websocket endpoint");
 
         mWs.close();
