@@ -7,7 +7,7 @@ env:
   - secure: kE7+ToJCo6ImDtsvPmOYFwGhJSimmqo5SSV6GBqauTm3iTVzlEe1PsSqmuILTdgqZWudXc8pwZ3qov5PFgwOjfVW2n7Tg7KpfAoyaKk3dHOAH3/IVKYs5cMHB1GgcbTRG+aS7EyjmNEkeDCaV7SU6MUWSTLqf0bQfJO4ElfQQy4=
 sudo: required
 services:
-  - docker
+- docker
 language: java
 jdk:
 - oraclejdk8
@@ -19,7 +19,8 @@ before_install:
 install:
 - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -U
 script:
-- mvn package -DfinalName=gocd-websocket-notifier -DfinalVersion=$RELEASE_VERSION -Dtest=\!IntegrationTest && mvn test -Dtest=IntegrationTest
+- mvn package -DfinalName=gocd-websocket-notifier -DfinalVersion=$RELEASE_VERSION
+  -Dtest=\!IntegrationTest && mvn test -Dtest=IntegrationTest
 after_script:
 - cat $PWD/target/docker-testing/log/go-server.out.log
 before_deploy:
@@ -39,3 +40,6 @@ deploy:
     branch: master
     tags: false
     repo: matt-richardson/gocd-websocket-notifier
+notifications:
+  slack:
+    secure: lQwzq547eJeMWqKH+/LZV9HuR7bKudT9J/l/6/NamEWf6cp7vze7DFTYWIsGy8l0KcqlIRl6FRn1cu1F72hIxep42YW2gBF0mzNaWyv6xNpmwtZEwdbEir6/3vwMMoSTdNAdCVjvck8rCqNN+V6Q6AMUW+wP6nwseVr+Wb6mWMg=
