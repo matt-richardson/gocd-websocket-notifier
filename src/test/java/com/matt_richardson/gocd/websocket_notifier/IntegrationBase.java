@@ -40,20 +40,17 @@ public abstract class IntegrationBase {
     private static String DetermineTestPath() throws UnsupportedEncodingException {
         String path = IntegrationTest.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         String testPath = Paths.get(URLDecoder.decode(path, "UTF-8")).resolve("../docker-testing").normalize().toString();
-        System.out.println("Test path is " + testPath);
         return testPath;
     }
 
     private static void SetupTestFolder(String testPath) throws IOException {
         String pluginLocation = testPath + "/lib/plugins/external";
-        System.out.println("Creating path " + pluginLocation);
         Files.createDirectories(Paths.get(pluginLocation));
         String srcPath = testPath + "/../gocd-websocket-notifier.jar";
         if (!Files.exists(Paths.get(srcPath))) {
             srcPath = testPath + "/../../classes/artifacts/gocd-websocket-notifier.jar";
         }
         String destPath = testPath + "/lib/plugins/external/gocd-websocket-notifier.jar";
-        System.out.println("Copying '" + srcPath + "' to '" + destPath + "'");
         Files.copy(Paths.get(srcPath), Paths.get(destPath), REPLACE_EXISTING);
     }
 
@@ -83,9 +80,6 @@ public abstract class IntegrationBase {
         exec(command);
 
         command = "docker exec -i " + containerId + " chown -R go:go /var/lib/go-server/plugins";
-        exec(command);
-
-        command = "docker exec -i " + containerId + " ls -alR /var/lib/go-server/plugins";
         exec(command);
     }
 
