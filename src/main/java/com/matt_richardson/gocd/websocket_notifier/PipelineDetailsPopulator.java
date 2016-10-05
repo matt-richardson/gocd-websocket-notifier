@@ -12,15 +12,20 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import org.apache.commons.codec.binary.Base64;
+
 public class PipelineDetailsPopulator {
     private static Logger LOGGER = Logger.getLoggerFor(GoNotificationPlugin.class);
+    private static PluginConfig pluginConfig;
     private int httpPort;
 
     public PipelineDetailsPopulator() {
-        this.httpPort = 8153;
+    	pluginConfig = new PluginConfig();
+    	this.httpPort = pluginConfig.getGoHttpPort();
     }
 
     public PipelineDetailsPopulator(int httpPort) {
+    	pluginConfig = new PluginConfig();
         this.httpPort = httpPort;
     }
 
@@ -36,6 +41,14 @@ public class PipelineDetailsPopulator {
 
         URL url = new URL(sURL);
         HttpURLConnection request = (HttpURLConnection) url.openConnection();
+        if (pluginConfig.hasBasicAuth()) {
+        	String user = pluginConfig.getGoUser();
+        	String password = pluginConfig.getGoPassword();
+        	
+        	String authString = user + ":" + password;
+            String encoded = new String(Base64.encodeBase64(authString.getBytes()));
+            request.setRequestProperty("Authorization", "Basic "+encoded);
+        }
         request.connect();
 
         JsonParser parser = new JsonParser();
