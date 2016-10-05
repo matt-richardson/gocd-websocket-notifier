@@ -20,12 +20,12 @@ public class PipelineDetailsPopulator {
     private int httpPort;
 
     public PipelineDetailsPopulator() {
-    	pluginConfig = new PluginConfig();
-    	this.httpPort = pluginConfig.getGoHttpPort();
+        pluginConfig = new PluginConfig();
+        this.httpPort = pluginConfig.getGoHttpPort();
     }
 
     public PipelineDetailsPopulator(int httpPort) {
-    	pluginConfig = new PluginConfig();
+        pluginConfig = new PluginConfig();
         this.httpPort = httpPort;
     }
 
