@@ -46,7 +46,7 @@ public class IntegrationTest extends IntegrationBase {
         if (client.receivedAtLeastOneMessage())
             throw new Exception("Didn't get a message over the websocket.");
 
-        PipelineDetailsPopulator populator = new PipelineDetailsPopulator(Integer.parseInt(httpPort));
+        PipelineDetailsPopulator populator = new PipelineDetailsPopulator(new PluginConfig());
         JsonObject element = populator.downloadPipelineInstanceDetails(pipelineName).getAsJsonObject();
         Assert.assertEquals(element.get("name").getAsString(), pipelineName);
     }
