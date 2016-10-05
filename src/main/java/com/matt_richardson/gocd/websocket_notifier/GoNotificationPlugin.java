@@ -41,7 +41,7 @@ public class GoNotificationPlugin implements GoPlugin {
                 }
                 s.start();
                 LOGGER.info("WebSocket server started on port: " + s.getPort());
-                pipelineListener = new WebSocketPipelineListener(s);
+                pipelineListener = new WebSocketPipelineListener(s, pluginConfig);
             } catch (UnknownHostException e) {
                 LOGGER.error("Failed to launch WebSocket server on port: " + port, e);
             }

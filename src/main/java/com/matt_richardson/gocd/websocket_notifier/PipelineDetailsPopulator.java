@@ -16,17 +16,10 @@ import org.apache.commons.codec.binary.Base64;
 
 public class PipelineDetailsPopulator {
     private static Logger LOGGER = Logger.getLoggerFor(GoNotificationPlugin.class);
-    private static PluginConfig pluginConfig;
-    private int httpPort;
+    private PluginConfig pluginConfig;
 
-    public PipelineDetailsPopulator() {
-        pluginConfig = new PluginConfig();
-        this.httpPort = pluginConfig.getGoHttpPort();
-    }
-
-    public PipelineDetailsPopulator(int httpPort) {
-        pluginConfig = new PluginConfig();
-        this.httpPort = httpPort;
+    public PipelineDetailsPopulator(PluginConfig pluginConfig) {
+        this.pluginConfig = pluginConfig;
     }
 
     String mergeInPipelineInstanceDetails(JsonElement notification, JsonElement pipelineInstance)
@@ -37,7 +30,8 @@ public class PipelineDetailsPopulator {
     }
 
     JsonElement downloadPipelineInstanceDetails(String pipelineName) throws IOException {
-        String sURL = "http://localhost:" + httpPort + "/go/api/pipelines/" + pipelineName + "/history";
+    	int goHttpPort = pluginConfig.getGoHttpPort();
+        String sURL = "http://localhost:" + goHttpPort + "/go/api/pipelines/" + pipelineName + "/history";
 
         URL url = new URL(sURL);
         HttpURLConnection request = (HttpURLConnection) url.openConnection();
