@@ -22,12 +22,14 @@ Download jar from releases & place it in /plugins/external & restart Go Server.
 
 ## Configuration
 Plugin listens on port 8887 on all ip addresses by default.
-Plugin uses default Go server HTTP port 8153.
 To edit these, create a (standard java properties) file with the name
 gocd-websocket-notifier.conf in the home directory of the user that runs go.
 ````
 port=8888
 host=127.0.0.1
+````
+Plugin uses default Go server HTTP port 8153. To edit, add the following to the .conf
+````
 goHttpPort=8080
 ````
 If basic authenication is required for Go Api, add them to the same .conf file as follows:
