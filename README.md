@@ -28,6 +28,15 @@ gocd-websocket-notifier.conf in the home directory of the user that runs go.
 port=8888
 host=127.0.0.1
 ````
+Plugin uses default Go server HTTP port 8153. To edit, add the following to the .conf
+````
+goHttpPort=8080
+````
+If basic authenication is required for Go Api, add them to the same .conf file as follows:
+````
+goUser=go.user
+goPassword=myGoPassword
+````
 
 ## Planned Enhancements
 * Send [a reply](http://www.go.cd/documentation/developer/writing_go_plugins/notification/version_1_0/stage_status_notification.html#response---from-the-plugin)

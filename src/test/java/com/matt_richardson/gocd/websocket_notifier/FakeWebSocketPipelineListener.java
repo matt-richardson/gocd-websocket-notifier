@@ -7,7 +7,7 @@ public class FakeWebSocketPipelineListener extends WebSocketPipelineListener {
     private GoPluginApiRequest receivedMessage;
 
     public FakeWebSocketPipelineListener() {
-        super(null);
+        super(null, new PluginConfig());
     }
 
     @Override
