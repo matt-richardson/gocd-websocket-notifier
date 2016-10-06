@@ -16,10 +16,10 @@ import org.apache.commons.codec.binary.Base64;
 
 public class PipelineDetailsPopulator {
     private static Logger LOGGER = Logger.getLoggerFor(GoNotificationPlugin.class);
-    private PluginConfig pluginConfig;
+    private static PluginConfig pluginConfig;
 
     public PipelineDetailsPopulator(PluginConfig pluginConfig) {
-        this.pluginConfig = pluginConfig;
+        PipelineDetailsPopulator.pluginConfig = pluginConfig;
     }
 
     String mergeInPipelineInstanceDetails(JsonElement notification, JsonElement pipelineInstance)

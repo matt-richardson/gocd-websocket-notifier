@@ -22,7 +22,7 @@ public class GoNotificationPlugin implements GoPlugin {
     public static final String REQUEST_STAGE_STATUS = "stage-status";
     public static final int SUCCESS_RESPONSE_CODE = 200;
     public static final int INTERNAL_ERROR_RESPONSE_CODE = 500;
-    private WebSocketPipelineListener pipelineListener;
+    private static WebSocketPipelineListener pipelineListener;
 
     public void initializeGoApplicationAccessor(GoApplicationAccessor goApplicationAccessor) {
         if (pipelineListener == null) {
@@ -53,7 +53,7 @@ public class GoNotificationPlugin implements GoPlugin {
     }
 
     public GoNotificationPlugin(WebSocketPipelineListener pipelineListener) {
-        this.pipelineListener = pipelineListener;
+        GoNotificationPlugin.pipelineListener = pipelineListener;
     }
 
     public GoPluginApiResponse handle(GoPluginApiRequest goPluginApiRequest) {
