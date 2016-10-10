@@ -11,7 +11,7 @@ public class IntegrationTest extends IntegrationBase {
     @Test
     public void testWebSocketReceivesMessageOnNewPipeline() throws Exception
     {
-        GoCdWebSocketClient client = new GoCdWebSocketClient( new URI( "ws://localhost:" + websocketsPort ));
+        GoCdWebSocketClient client = new GoCdWebSocketClient( new URI( "ws://localhost:" + pluginConfig.getPort() ));
 
         System.out.println("Creating pipeline");
         String pipelineName = goCdApi.createPipeline();
@@ -32,7 +32,7 @@ public class IntegrationTest extends IntegrationBase {
 
     @Test
     public void testDownloadPipelineInstanceDetails() throws Exception {
-        GoCdWebSocketClient client = new GoCdWebSocketClient( new URI( "ws://localhost:" + websocketsPort ));
+        GoCdWebSocketClient client = new GoCdWebSocketClient( new URI( "ws://localhost:" + pluginConfig.getPort() ));
 
         String pipelineName = goCdApi.createPipeline();
         goCdApi.unPausePipeline(pipelineName);
@@ -46,7 +46,7 @@ public class IntegrationTest extends IntegrationBase {
         if (client.receivedAtLeastOneMessage())
             throw new Exception("Didn't get a message over the websocket.");
 
-        PipelineDetailsPopulator populator = new PipelineDetailsPopulator(Integer.parseInt(httpPort));
+        PipelineDetailsPopulator populator = new PipelineDetailsPopulator(pluginConfig);
         JsonObject element = populator.downloadPipelineInstanceDetails(pipelineName).getAsJsonObject();
         Assert.assertEquals(element.get("name").getAsString(), pipelineName);
     }

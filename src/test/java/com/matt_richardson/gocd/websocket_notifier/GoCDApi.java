@@ -10,9 +10,9 @@ import java.util.UUID;
 
 class GoCDApi {
 
-    private String httpPort;
+    private int httpPort;
 
-    GoCDApi(String httpPort) {
+    GoCDApi(int httpPort) {
         this.httpPort = httpPort;
     }
 

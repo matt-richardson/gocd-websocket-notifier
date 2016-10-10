@@ -8,9 +8,9 @@ public class WebSocketPipelineListener {
     private PipelineWebSocketServer webSocketServer;
     private Logger LOGGER = Logger.getLoggerFor(WebSocketPipelineListener.class);
 
-    public WebSocketPipelineListener(PipelineWebSocketServer webSocketServer) {
+    public WebSocketPipelineListener(PipelineWebSocketServer webSocketServer, PluginConfig pluginConfig) {
         this.webSocketServer = webSocketServer;
-        this.populator = new PipelineDetailsPopulator();
+        this.populator = new PipelineDetailsPopulator(pluginConfig);
     }
 
     public void notify(GoPluginApiRequest message)

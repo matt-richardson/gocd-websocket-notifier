@@ -23,8 +23,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public abstract class IntegrationBase {
     private static DockerClient docker = null;
     private static String containerId = null;
-    static String httpPort;
-    static String websocketsPort;
+    static PluginConfig pluginConfig = null;
     static GoCDApi goCdApi;
 
     @BeforeClass
@@ -34,7 +33,7 @@ public abstract class IntegrationBase {
         SetupTestFolder(testPath);
         SetupContainer();
         RunContainer(testPath);
-        goCdApi = new GoCDApi(httpPort);
+        goCdApi = new GoCDApi(pluginConfig.getGoHttpPort());
     }
 
     private static String DetermineTestPath() throws UnsupportedEncodingException {
@@ -118,13 +117,12 @@ public abstract class IntegrationBase {
                 }
                 if (message.contains("Go Server has started on port 8153 inside this container")) {
                     final ContainerInfo info = docker.inspectContainer(containerId);
-                    httpPort = info.networkSettings().ports().get("8153/tcp").get(0).hostPort();
-                    String httpsPort = info.networkSettings().ports().get("8154/tcp").get(0).hostPort();
-                    websocketsPort = info.networkSettings().ports().get("8887/tcp").get(0).hostPort();
+                    pluginConfig = new PluginConfig();
+                    pluginConfig.setGoHttpPort(Integer.parseInt(info.networkSettings().ports().get("8153/tcp").get(0).hostPort()));
+                    pluginConfig.setPort(Integer.parseInt(info.networkSettings().ports().get("8887/tcp").get(0).hostPort()));
 
-                    System.out.println("HTTP port is " + httpPort);
-                    System.out.println("HTTPS port is " + httpsPort);
-                    System.out.println("WS port is " + websocketsPort);
+                    System.out.println("HTTP port is " + pluginConfig.getGoHttpPort());
+                    System.out.println("WS port is " + pluginConfig.getGoHttpPort());
                     return;
                 }
                 Thread.sleep(5000);

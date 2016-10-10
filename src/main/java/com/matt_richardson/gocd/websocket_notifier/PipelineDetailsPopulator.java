@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.thoughtworks.go.plugin.api.logging.Logger;
+import org.apache.commons.codec.binary.Base64;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,14 +15,10 @@ import java.net.URL;
 
 public class PipelineDetailsPopulator {
     private static Logger LOGGER = Logger.getLoggerFor(GoNotificationPlugin.class);
-    private int httpPort;
+    private PluginConfig pluginConfig;
 
-    public PipelineDetailsPopulator() {
-        this.httpPort = 8153;
-    }
-
-    public PipelineDetailsPopulator(int httpPort) {
-        this.httpPort = httpPort;
+    public PipelineDetailsPopulator(PluginConfig pluginConfig) {
+        this.pluginConfig = pluginConfig;
     }
 
     String mergeInPipelineInstanceDetails(JsonElement notification, JsonElement pipelineInstance)
@@ -32,10 +29,19 @@ public class PipelineDetailsPopulator {
     }
 
     JsonElement downloadPipelineInstanceDetails(String pipelineName) throws IOException {
-        String sURL = "http://localhost:" + httpPort + "/go/api/pipelines/" + pipelineName + "/history";
+        int goHttpPort = pluginConfig.getGoHttpPort();
+        String sURL = "http://localhost:" + goHttpPort + "/go/api/pipelines/" + pipelineName + "/history";
 
         URL url = new URL(sURL);
         HttpURLConnection request = (HttpURLConnection) url.openConnection();
+        if (pluginConfig.hasBasicAuth()) {
+            String user = pluginConfig.getGoUser();
+            String password = pluginConfig.getGoPassword();
+
+            String authString = user + ":" + password;
+            String encoded = new String(Base64.encodeBase64(authString.getBytes()));
+            request.setRequestProperty("Authorization", "Basic "+encoded);
+        }
         request.connect();
 
         JsonParser parser = new JsonParser();
