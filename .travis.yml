@@ -6,6 +6,7 @@ env:
   - secure: c4X2AkCdg2nNqnWdupl8vLR/HkuQ149Kcgb7qFDEjmm0Kps90iMZBsIX4MJEEvpGQ6qxQWZsgJYuiCk3QGaeUFdzd/aeTXzUsaw40pkDWfAvAlAvuIbgYYWSeIt2SIUpczr9twbVM1p9+HWZQGIhby1OVGPPHpsJkgeM2aboBCw=
   - secure: kE7+ToJCo6ImDtsvPmOYFwGhJSimmqo5SSV6GBqauTm3iTVzlEe1PsSqmuILTdgqZWudXc8pwZ3qov5PFgwOjfVW2n7Tg7KpfAoyaKk3dHOAH3/IVKYs5cMHB1GgcbTRG+aS7EyjmNEkeDCaV7SU6MUWSTLqf0bQfJO4ElfQQy4=
 sudo: required
+dist: trusty
 services:
 - docker
 language: java
