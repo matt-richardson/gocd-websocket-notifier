@@ -1,8 +1,18 @@
 # gocd-websocket-notifier
 
+## This repository is archived
+
+It's been years since I've used GoCD, and I dont have the time (or interest) in maintaining this.
+
+Please feel free to fork and continue running with it.
+
+**Note**: GitHub is warning me about known security vulnerabilities. If you want to use this, please fork and update to resolve.
+
+## About
+
 [![Build Status](https://travis-ci.org/matt-richardson/gocd-websocket-notifier.svg?branch=master)](https://travis-ci.org/matt-richardson/gocd-websocket-notifier)
 
-WebSocket based GoCD build notifier
+WebSocket based [GoCD](https://www.gocd.org/) build notifier
 
 Listens to notifications from the GoCD (15.2+) notification api, and publishes them over websockets.
 This initial use case is for low impact, fast build notifiers, such as
